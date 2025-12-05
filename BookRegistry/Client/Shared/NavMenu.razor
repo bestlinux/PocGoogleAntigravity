@@ -1,30 +1,33 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">BookRegistry</a>
+﻿<div class="nav-menu-container">
+    <div class="brand-header">
+        <a class="brand-link" href="">
+            <span class="brand-icon oi oi-book" aria-hidden="true"></span>
+            BookRegistry
+        </a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
     </div>
-</div>
 
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="books">
-                <span class="oi oi-book" aria-hidden="true"></span> Books
-            </NavLink>
-        </div>
-    </nav>
+    <div class="@NavMenuCssClass nav-content" @onclick="ToggleNavMenu">
+        <nav class="nav-links">
+            <div class="nav-item">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <span class="oi oi-dashboard" aria-hidden="true"></span> Dashboard
+                </NavLink>
+            </div>
+            <div class="nav-item">
+                <NavLink class="nav-link" href="books">
+                    <span class="oi oi-book" aria-hidden="true"></span> Books
+                </NavLink>
+            </div>
+            <div class="nav-item">
+                <NavLink class="nav-link" href="fetchdata">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Data
+                </NavLink>
+            </div>
+        </nav>
+    </div>
 </div>
 
 @code {
