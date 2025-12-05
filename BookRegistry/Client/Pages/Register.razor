@@ -1,0 +1,76 @@
+@page "/register"
+@using BookRegistry.Shared
+@using BookRegistry.Client.Auth
+@using System.Net.Http.Json
+@inject HttpClient HttpClient
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager navManager
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card glass-card mt-5">
+            <div class="card-header bg-transparent text-center border-0 pt-4">
+                <h3 class="text-white">Register</h3>
+            </div>
+            <div class="card-body">
+                @if (ShowAuthError)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        <p>@Error</p>
+                    </div>
+                }
+
+                <EditForm Model="userRegister" OnValidSubmit="ExecuteRegister">
+                    <DataAnnotationsValidator />
+                    <div class="mb-3">
+                        <label for="email" class="form-label text-light">Email</label>
+                        <InputText id="email" class="form-control" @bind-Value="userRegister.Email" />
+                        <ValidationMessage For="@(() => userRegister.Email)" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label text-light">Password</label>
+                        <InputText id="password" type="password" class="form-control" @bind-Value="userRegister.Password" />
+                        <ValidationMessage For="@(() => userRegister.Password)" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label text-light">Confirm Password</label>
+                        <InputText id="confirmPassword" type="password" class="form-control" @bind-Value="userRegister.ConfirmPassword" />
+                        <ValidationMessage For="@(() => userRegister.ConfirmPassword)" />
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Register</button>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="login" class="text-info text-decoration-none">Already have an account? Login</a>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private UserRegister userRegister = new UserRegister();
+    private bool ShowAuthError = false;
+    private string Error = "";
+
+    private async Task ExecuteRegister()
+    {
+        ShowAuthError = false;
+        var result = await HttpClient.PostAsJsonAsync("api/auth/register", userRegister);
+        
+        if (!result.IsSuccessStatusCode)
+        {
+            Error = await result.Content.ReadAsStringAsync();
+            ShowAuthError = true;
+            return;
+        }
+
+        var response = await result.Content.ReadFromJsonAsync<UserSession>();
+        await localStorage.SetItemAsync("authToken", response!.Token);
+        ((CustomAuthenticationStateProvider)AuthStateProvider).NotifyUserAuthentication(response.Token);
+        
+        navManager.NavigateTo("/");
+    }
+}
