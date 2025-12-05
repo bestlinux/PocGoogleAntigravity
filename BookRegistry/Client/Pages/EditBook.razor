@@ -1,0 +1,71 @@
+@page "/book/create"
+@page "/book/edit/{id:int}"
+@using BookRegistry.Shared
+@using BookRegistry.Client.Services
+@inject IBookService BookService
+@inject NavigationManager NavigationManager
+
+<PageTitle>@Title</PageTitle>
+
+<h1>@Title</h1>
+
+<EditForm Model="book" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="title" class="form-label">Title</label>
+        <InputText id="title" class="form-control" @bind-Value="book.Title" />
+    </div>
+
+    <div class="mb-3">
+        <label for="author" class="form-label">Author</label>
+        <InputText id="author" class="form-control" @bind-Value="book.Author" />
+    </div>
+
+    <div class="mb-3">
+        <label for="publishDate" class="form-label">Publish Date</label>
+        <InputDate id="publishDate" class="form-control" @bind-Value="book.PublishDate" />
+    </div>
+
+    <div class="mb-3">
+        <label for="isbn" class="form-label">ISBN</label>
+        <InputText id="isbn" class="form-control" @bind-Value="book.ISBN" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a href="books" class="btn btn-secondary">Cancel</a>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+
+    private Book book = new Book();
+    private string Title => Id.HasValue ? "Edit Book" : "Create Book";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id.HasValue)
+        {
+            var result = await BookService.GetBook(Id.Value);
+            if (result != null)
+            {
+                book = result;
+            }
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (Id.HasValue)
+        {
+            await BookService.UpdateBook(book);
+        }
+        else
+        {
+            await BookService.CreateBook(book);
+        }
+        NavigationManager.NavigateTo("books");
+    }
+}
