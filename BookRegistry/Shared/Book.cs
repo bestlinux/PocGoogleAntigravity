@@ -16,5 +16,7 @@ namespace BookRegistry.Shared
         public DateTime PublishDate { get; set; } = DateTime.Now;
 
         public string ISBN { get; set; } = string.Empty;
+
+        public string? CoverImageBase64 { get; set; }
     }
 }

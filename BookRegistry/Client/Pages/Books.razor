@@ -22,6 +22,7 @@ else
     <table class="table">
         <thead>
             <tr>
+                <th>Cover</th>
                 <th>Title</th>
                 <th>Author</th>
                 <th>Publish Date</th>
@@ -33,6 +34,12 @@ else
             @foreach (var book in books)
             {
                 <tr>
+                    <td>
+                        @if (!string.IsNullOrEmpty(book.CoverImageBase64))
+                        {
+                            <img src="@($"data:image/png;base64,{book.CoverImageBase64}")" alt="@book.Title" style="max-width: 50px; max-height: 75px;" />
+                        }
+                    </td>
                     <td>@book.Title</td>
                     <td>@book.Author</td>
                     <td>@book.PublishDate.ToShortDateString()</td>

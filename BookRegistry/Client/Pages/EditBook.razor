@@ -33,6 +33,17 @@
         <InputText id="isbn" class="form-control" @bind-Value="book.ISBN" />
     </div>
 
+    <div class="mb-3">
+        <label for="coverImage" class="form-label">Cover Image</label>
+        <InputFile id="coverImage" class="form-control" OnChange="@HandleImageUpload" accept="image/*" />
+        @if (!string.IsNullOrEmpty(book.CoverImageBase64))
+        {
+            <div class="mt-2">
+                <img src="@($"data:image/png;base64,{book.CoverImageBase64}")" alt="Book Cover Preview" style="max-width: 200px; max-height: 300px;" />
+            </div>
+        }
+    </div>
+
     <button type="submit" class="btn btn-primary">Save</button>
     <a href="books" class="btn btn-secondary">Cancel</a>
 </EditForm>
@@ -67,5 +78,21 @@
             await BookService.CreateBook(book);
         }
         NavigationManager.NavigateTo("books");
+    }
+
+    private async Task HandleImageUpload(InputFileChangeEventArgs e)
+    {
+        var imageFile = e.File;
+        if (imageFile != null)
+        {
+            // Resize to max 512x512 to keep size reasonable
+            var resizedImage = await imageFile.RequestImageFileAsync("image/png", 512, 512);
+            
+            using var stream = resizedImage.OpenReadStream(maxAllowedSize: 1024 * 1024); // 1MB max
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+            
+            book.CoverImageBase64 = Convert.ToBase64String(memoryStream.ToArray());
+        }
     }
 }
