@@ -1,3 +1,4 @@
+@page "/"
 @page "/login"
 @using BookRegistry.Shared
 @using BookRegistry.Client.Auth
@@ -11,7 +12,7 @@
     <div class="col-md-6">
         <div class="card glass-card mt-5">
             <div class="card-header bg-transparent text-center border-0 pt-4">
-                <h3 class="text-white">Login</h3>
+                <h3 class="text-white">Entrar</h3>
             </div>
             <div class="card-body">
                 @if (ShowAuthError)
@@ -24,20 +25,20 @@
                 <EditForm Model="userLogin" OnValidSubmit="ExecuteLogin">
                     <DataAnnotationsValidator />
                     <div class="mb-3">
-                        <label for="email" class="form-label text-light">Email</label>
+                        <label for="email" class="form-label text-light">E-mail</label>
                         <InputText id="email" class="form-control" @bind-Value="userLogin.Email" />
                         <ValidationMessage For="@(() => userLogin.Email)" />
                     </div>
                     <div class="mb-3">
-                        <label for="password" class="form-label text-light">Password</label>
+                        <label for="password" class="form-label text-light">Senha</label>
                         <InputText id="password" type="password" class="form-control" @bind-Value="userLogin.Password" />
                         <ValidationMessage For="@(() => userLogin.Password)" />
                     </div>
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Login</button>
+                        <button type="submit" class="btn btn-primary">Entrar</button>
                     </div>
                     <div class="text-center mt-3">
-                        <a href="register" class="text-info text-decoration-none">Don't have an account? Register</a>
+                        <a href="register" class="text-info text-decoration-none">Não tem uma conta? Registre-se</a>
                     </div>
                 </EditForm>
             </div>
@@ -49,6 +50,16 @@
     private UserLogin userLogin = new UserLogin();
     private bool ShowAuthError = false;
     private string Error = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            navManager.NavigateTo("/books");
+        }
+    }
 
     private async Task ExecuteLogin()
     {
@@ -66,6 +77,6 @@
         await localStorage.SetItemAsync("authToken", response!.Token);
         ((CustomAuthenticationStateProvider)AuthStateProvider).NotifyUserAuthentication(response.Token);
         
-        navManager.NavigateTo("/");
+        navManager.NavigateTo("/books");
     }
 }

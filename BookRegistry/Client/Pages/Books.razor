@@ -5,27 +5,27 @@
 @inject IBookService BookService
 @inject NavigationManager NavigationManager
 
-<PageTitle>Books</PageTitle>
+<PageTitle>Livros</PageTitle>
 
-<h1>Books</h1>
+<h1>Livros</h1>
 
 <p>
-    <a href="book/create" class="btn btn-primary">Create New</a>
+    <a href="book/create" class="btn btn-primary">Criar Novo</a>
 </p>
 
 @if (books == null)
 {
-    <p><em>Loading...</em></p>
+    <p><em>Carregando...</em></p>
 }
 else
 {
     <table class="table">
         <thead>
             <tr>
-                <th>Cover</th>
-                <th>Title</th>
-                <th>Author</th>
-                <th>Publish Date</th>
+                <th>Capa</th>
+                <th>Título</th>
+                <th>Autor</th>
+                <th>Data de Publicação</th>
                 <th>ISBN</th>
                 <th></th>
             </tr>
@@ -45,8 +45,8 @@ else
                     <td>@book.PublishDate.ToShortDateString()</td>
                     <td>@book.ISBN</td>
                     <td>
-                        <a href="book/edit/@book.Id" class="btn btn-secondary btn-sm">Edit</a>
-                        <button class="btn btn-danger btn-sm" @onclick="() => DeleteBook(book.Id)">Delete</button>
+                        <a href="book/edit/@book.Id" class="btn btn-secondary btn-sm">Editar</a>
+                        <button class="btn btn-danger btn-sm" @onclick="() => DeleteBook(book.Id)">Excluir</button>
                     </td>
                 </tr>
             }

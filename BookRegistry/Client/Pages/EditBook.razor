@@ -14,17 +14,17 @@
     <ValidationSummary />
 
     <div class="mb-3">
-        <label for="title" class="form-label">Title</label>
+        <label for="title" class="form-label">Título</label>
         <InputText id="title" class="form-control" @bind-Value="book.Title" />
     </div>
 
     <div class="mb-3">
-        <label for="author" class="form-label">Author</label>
+        <label for="author" class="form-label">Autor</label>
         <InputText id="author" class="form-control" @bind-Value="book.Author" />
     </div>
 
     <div class="mb-3">
-        <label for="publishDate" class="form-label">Publish Date</label>
+        <label for="publishDate" class="form-label">Data de Publicação</label>
         <InputDate id="publishDate" class="form-control" @bind-Value="book.PublishDate" />
     </div>
 
@@ -34,18 +34,18 @@
     </div>
 
     <div class="mb-3">
-        <label for="coverImage" class="form-label">Cover Image</label>
+        <label for="coverImage" class="form-label">Imagem da Capa</label>
         <InputFile id="coverImage" class="form-control" OnChange="@HandleImageUpload" accept="image/*" />
         @if (!string.IsNullOrEmpty(book.CoverImageBase64))
         {
             <div class="mt-2">
-                <img src="@($"data:image/png;base64,{book.CoverImageBase64}")" alt="Book Cover Preview" style="max-width: 200px; max-height: 300px;" />
+                <img src="@($"data:image/png;base64,{book.CoverImageBase64}")" alt="Pré-visualização da Capa" style="max-width: 200px; max-height: 300px;" />
             </div>
         }
     </div>
 
-    <button type="submit" class="btn btn-primary">Save</button>
-    <a href="books" class="btn btn-secondary">Cancel</a>
+    <button type="submit" class="btn btn-primary">Salvar</button>
+    <a href="books" class="btn btn-secondary">Cancelar</a>
 </EditForm>
 
 @code {
@@ -53,7 +53,7 @@
     public int? Id { get; set; }
 
     private Book book = new Book();
-    private string Title => Id.HasValue ? "Edit Book" : "Create Book";
+    private string Title => Id.HasValue ? "Editar Livro" : "Criar Livro";
 
     protected override async Task OnParametersSetAsync()
     {

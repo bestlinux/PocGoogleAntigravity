@@ -4,11 +4,11 @@ namespace BookRegistry.Shared
 {
     public class UserLogin
     {
-        [Required]
-        [EmailAddress]
+        [Required(ErrorMessage = "O e-mail é obrigatório.")]
+        [EmailAddress(ErrorMessage = "O e-mail não é válido.")]
         public string Email { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "A senha é obrigatória.")]
         public string Password { get; set; } = string.Empty;
     }
 }

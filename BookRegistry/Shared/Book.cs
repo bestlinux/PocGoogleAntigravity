@@ -7,10 +7,10 @@ namespace BookRegistry.Shared
     {
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "O título é obrigatório.")]
         public string Title { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "O autor é obrigatório.")]
         public string Author { get; set; } = string.Empty;
 
         public DateTime PublishDate { get; set; } = DateTime.Now;
