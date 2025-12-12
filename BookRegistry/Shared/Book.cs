@@ -18,5 +18,9 @@ namespace BookRegistry.Shared
         public string ISBN { get; set; } = string.Empty;
 
         public string? CoverImageBase64 { get; set; }
+
+        // Relacionamento com Editora
+        public int? PublisherId { get; set; }
+        public Publisher? Publisher { get; set; }
     }
 }

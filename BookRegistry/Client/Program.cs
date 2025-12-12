@@ -16,5 +16,7 @@ builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IPublisherService, PublisherService>();
+
 
 await builder.Build().RunAsync();

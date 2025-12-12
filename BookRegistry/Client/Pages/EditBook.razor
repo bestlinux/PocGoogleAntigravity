@@ -3,6 +3,7 @@
 @using BookRegistry.Shared
 @using BookRegistry.Client.Services
 @inject IBookService BookService
+@inject IPublisherService PublisherService
 @inject NavigationManager NavigationManager
 
 <PageTitle>@Title</PageTitle>
@@ -34,6 +35,20 @@
     </div>
 
     <div class="mb-3">
+        <label for="publisher" class="form-label">Editora</label>
+        <InputSelect id="publisher" class="form-control" @bind-Value="book.PublisherId" style="color: #000;">
+            <option value="">-- Selecione uma editora (opcional) --</option>
+            @if (publishers != null)
+            {
+                @foreach (var publisher in publishers)
+                {
+                    <option value="@publisher.Id">@publisher.Name</option>
+                }
+            }
+        </InputSelect>
+    </div>
+
+    <div class="mb-3">
         <label for="coverImage" class="form-label">Imagem da Capa</label>
         <InputFile id="coverImage" class="form-control" OnChange="@HandleImageUpload" accept="image/*" />
         @if (!string.IsNullOrEmpty(book.CoverImageBase64))
@@ -53,7 +68,13 @@
     public int? Id { get; set; }
 
     private Book book = new Book();
+    private List<Publisher>? publishers;
     private string Title => Id.HasValue ? "Editar Livro" : "Criar Livro";
+
+    protected override async Task OnInitializedAsync()
+    {
+        publishers = await PublisherService.GetPublishers();
+    }
 
     protected override async Task OnParametersSetAsync()
     {

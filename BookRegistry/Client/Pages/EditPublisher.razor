@@ -1,0 +1,66 @@
+@page "/publisher/create"
+@page "/publisher/edit/{id:int}"
+@using BookRegistry.Shared
+@using BookRegistry.Client.Services
+@inject IPublisherService PublisherService
+@inject NavigationManager NavigationManager
+
+<PageTitle>@Title</PageTitle>
+
+<h1>@Title</h1>
+
+<EditForm Model="publisher" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="name" class="form-label">Nome</label>
+        <InputText id="name" class="form-control" @bind-Value="publisher.Name" />
+    </div>
+
+    <div class="mb-3">
+        <label for="country" class="form-label">País</label>
+        <InputText id="country" class="form-control" @bind-Value="publisher.Country" />
+    </div>
+
+    <div class="mb-3">
+        <label for="website" class="form-label">Website</label>
+        <InputText id="website" class="form-control" @bind-Value="publisher.Website" placeholder="https://exemplo.com.br" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Salvar</button>
+    <a href="publishers" class="btn btn-secondary">Cancelar</a>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+
+    private Publisher publisher = new Publisher();
+    private string Title => Id.HasValue ? "Editar Editora" : "Criar Editora";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id.HasValue)
+        {
+            var result = await PublisherService.GetPublisher(Id.Value);
+            if (result != null)
+            {
+                publisher = result;
+            }
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (Id.HasValue)
+        {
+            await PublisherService.UpdatePublisher(publisher);
+        }
+        else
+        {
+            await PublisherService.CreatePublisher(publisher);
+        }
+        NavigationManager.NavigateTo("publishers");
+    }
+}

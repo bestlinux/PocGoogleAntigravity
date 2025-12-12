@@ -1,0 +1,128 @@
+@page "/publishers"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@using BookRegistry.Shared
+@using BookRegistry.Client.Services
+@inject IPublisherService PublisherService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Editoras</PageTitle>
+
+<h1>Editoras</h1>
+
+<p>
+    <a href="publisher/create" class="btn btn-primary">Criar Nova</a>
+</p>
+
+@if (publishers == null)
+{
+    <p><em>Carregando...</em></p>
+}
+else if (publishers.Count == 0)
+{
+    <p><em>Nenhuma editora cadastrada.</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>País</th>
+                <th>Website</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var publisher in publishers)
+            {
+                <tr>
+                    <td>@publisher.Name</td>
+                    <td>@publisher.Country</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(publisher.Website))
+                        {
+                            <a href="@publisher.Website" target="_blank">@publisher.Website</a>
+                        }
+                    </td>
+                    <td>
+                        <a href="publisher/edit/@publisher.Id" class="btn btn-secondary btn-sm">Editar</a>
+                        <button class="btn btn-danger btn-sm" @onclick="() => DeletePublisher(publisher.Id)">Excluir</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <nav aria-label="Navegação de páginas">
+        <ul class="pagination justify-content-center">
+            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                <button class="page-link" @onclick="PreviousPage" disabled="@(currentPage == 1)">Anterior</button>
+            </li>
+            <li class="page-item disabled">
+                <span class="page-link">Página @currentPage de @totalPages</span>
+            </li>
+            <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
+                <button class="page-link" @onclick="NextPage" disabled="@(currentPage >= totalPages)">Próxima</button>
+            </li>
+        </ul>
+    </nav>
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger mt-3" role="alert">
+        @errorMessage
+    </div>
+}
+
+@code {
+    private List<Publisher>? publishers;
+    private string? errorMessage;
+    private int currentPage = 1;
+    private int pageSize = 10;
+    private int totalPages = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPublishers();
+    }
+
+    private async Task LoadPublishers()
+    {
+        var result = await PublisherService.GetPublishersPaginated(currentPage, pageSize);
+        publishers = result.Items;
+        totalPages = result.TotalPages;
+    }
+
+    private async Task PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+            await LoadPublishers();
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+            await LoadPublishers();
+        }
+    }
+
+    private async Task DeletePublisher(int id)
+    {
+        try
+        {
+            errorMessage = null;
+            await PublisherService.DeletePublisher(id);
+            await LoadPublishers();
+        }
+        catch (HttpRequestException ex)
+        {
+            errorMessage = "Não é possível excluir uma editora que possui livros associados.";
+        }
+    }
+}

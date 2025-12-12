@@ -25,6 +25,7 @@ else
                 <th>Capa</th>
                 <th>Título</th>
                 <th>Autor</th>
+                <th>Editora</th>
                 <th>Data de Publicação</th>
                 <th>ISBN</th>
                 <th></th>
@@ -42,6 +43,7 @@ else
                     </td>
                     <td>@book.Title</td>
                     <td>@book.Author</td>
+                    <td>@(book.Publisher?.Name ?? "-")</td>
                     <td>@book.PublishDate.ToShortDateString()</td>
                     <td>@book.ISBN</td>
                     <td>
