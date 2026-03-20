@@ -49,9 +49,44 @@ namespace BookRegistry.Server.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(book).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            var existingBook = await _context.Books.FindAsync(id);
+            if (existingBook == null)
+            {
+                return NotFound();
+            }
+
+            // Manually update properties to ensure changes are tracked correctly
+            existingBook.Title = book.Title;
+            existingBook.Author = book.Author;
+            existingBook.PublishDate = book.PublishDate;
+            existingBook.ISBN = book.ISBN;
+            existingBook.PublisherId = book.PublisherId;
+            existingBook.CoverImageBase64 = book.CoverImageBase64;
+            existingBook.IsRead = book.IsRead;
+            existingBook.ReadingEndDate = book.ReadingEndDate;
+
+            try 
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!BookExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
             return NoContent();
+        }
+
+        private bool BookExists(int id)
+        {
+            return _context.Books.Any(e => e.Id == id);
         }
 
         [HttpDelete("{id}")]

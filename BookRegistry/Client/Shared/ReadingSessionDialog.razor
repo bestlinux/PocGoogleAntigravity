@@ -1,0 +1,117 @@
+@using BookRegistry.Shared
+@inject HttpClient Http
+
+@if (ShowDialog)
+{
+    <div class="modal fade show" style="display:block; background-color: rgba(0,0,0,0.5);" aria-modal="true" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content custom-modal-dark">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registrar Leitura</h5>
+                    <!-- Added btn-close-white for visibility on dark background -->
+                    <button type="button" class="btn-close btn-close-white" @onclick="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="@readingSession" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="mb-3">
+                            <label for="startTime" class="form-label">Início</label>
+                            <InputDate Type="InputDateType.DateTimeLocal" id="startTime" class="form-control custom-input-dark" @bind-Value="readingSession.StartTime" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="endTime" class="form-label">Fim</label>
+                            <InputDate Type="InputDateType.DateTimeLocal" id="endTime" class="form-control custom-input-dark" @bind-Value="readingSession.EndTime" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="pagesRead" class="form-label">Páginas Lidas</label>
+                            <InputNumber id="pagesRead" class="form-control custom-input-dark" @bind-Value="readingSession.PagesRead" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Anotações</label>
+                            <InputTextArea id="notes" class="form-control custom-input-dark" @bind-Value="readingSession.Notes" />
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <InputCheckbox id="isFinal" class="form-check-input" @bind-Value="readingSession.IsFinalSession" />
+                            <label class="form-check-label" for="isFinal">Finalizei a leitura</label>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="Close">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Salvar</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .custom-modal-dark {
+            background-color: #1e293b !important;
+            color: #f8fafc !important;
+            border: 1px solid #334155;
+        }
+        
+        .custom-input-dark {
+            background-color: #334155 !important;
+            color: #ffffff !important;
+            border: 1px solid #475569 !important;
+        }
+
+        .custom-input-dark:focus {
+            background-color: #475569 !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25) !important;
+        }
+        
+        /* Ensure calendar icon is visible in dark mode inputs if browser supports it */
+        .custom-input-dark::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+        }
+    </style>
+}
+
+@code {
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    public bool ShowDialog { get; set; }
+    private ReadingSession readingSession = new ReadingSession();
+
+    public void Show(int bookId)
+    {
+        readingSession = new ReadingSession { BookId = bookId, StartTime = DateTime.Now, EndTime = DateTime.Now.AddMinutes(30) };
+        ShowDialog = true;
+        StateHasChanged();
+    }
+
+    public void Close()
+    {
+        ShowDialog = false;
+        StateHasChanged();
+    }
+
+    @inject IJSRuntime JSRuntime
+
+    private async Task HandleValidSubmit()
+    {
+        var response = await Http.PostAsJsonAsync("api/ReadingSession", readingSession);
+        if (response.IsSuccessStatusCode)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Leitura registrada com sucesso!");
+            ShowDialog = false;
+            await OnClose.InvokeAsync();
+        }
+        else
+        {
+            var errorMessage = await response.Content.ReadAsStringAsync();
+            await JSRuntime.InvokeVoidAsync("alert", $"Erro ao salvar: {response.StatusCode} - {errorMessage}");
+        }
+    }
+}

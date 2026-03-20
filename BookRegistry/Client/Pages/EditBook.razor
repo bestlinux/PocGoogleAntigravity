@@ -59,6 +59,16 @@
         }
     </div>
 
+    <div class="mb-3 form-check">
+        <InputCheckbox id="isRead" class="form-check-input" @bind-Value="book.IsRead" />
+        <label for="isRead" class="form-check-label">Lido?</label>
+    </div>
+
+    <div class="mb-3">
+        <label for="readingEndDate" class="form-label">Data de Fim da Leitura</label>
+        <InputDate id="readingEndDate" class="form-control" @bind-Value="book.ReadingEndDate" />
+    </div>
+
     <button type="submit" class="btn btn-primary">Salvar</button>
     <a href="books" class="btn btn-secondary">Cancelar</a>
 </EditForm>
@@ -90,6 +100,19 @@
 
     private async Task HandleValidSubmit()
     {
+        // Avoid EF Core issues with navigation property
+        book.Publisher = null;
+
+        // Ensure consistency
+        if (!book.IsRead)
+        {
+            book.ReadingEndDate = null;
+        }
+        else if (book.IsRead && book.ReadingEndDate == null)
+        {
+            book.ReadingEndDate = DateTime.Now;
+        }
+
         if (Id.HasValue)
         {
             await BookService.UpdateBook(book);

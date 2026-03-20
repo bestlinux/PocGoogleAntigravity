@@ -22,5 +22,8 @@ namespace BookRegistry.Shared
         // Relacionamento com Editora
         public int? PublisherId { get; set; }
         public Publisher? Publisher { get; set; }
+
+        public bool IsRead { get; set; }
+        public DateTime? ReadingEndDate { get; set; }
     }
 }

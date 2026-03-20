@@ -26,6 +26,8 @@ else
                 <th>Título</th>
                 <th>Autor</th>
                 <th>Editora</th>
+                <th>Lido</th>
+
                 <th>Data de Publicação</th>
                 <th>ISBN</th>
                 <th></th>
@@ -44,16 +46,21 @@ else
                     <td>@book.Title</td>
                     <td>@book.Author</td>
                     <td>@(book.Publisher?.Name ?? "-")</td>
+                    <td>@(book.IsRead ? "Sim" : "Não")</td>
+
                     <td>@book.PublishDate.ToShortDateString()</td>
                     <td>@book.ISBN</td>
                     <td>
                         <a href="book/edit/@book.Id" class="btn btn-secondary btn-sm">Editar</a>
+                        <button class="btn btn-info btn-sm" @onclick="() => OpenReadingSessionDialog(book.Id)">Ler</button>
                         <button class="btn btn-danger btn-sm" @onclick="() => DeleteBook(book.Id)">Excluir</button>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
+    
+    <ReadingSessionDialog @ref="readingSessionDialog" OnClose="LoadBooks" />
 }
 
 @code {
@@ -73,5 +80,12 @@ else
     {
         await BookService.DeleteBook(id);
         await LoadBooks();
+    }
+
+    private ReadingSessionDialog? readingSessionDialog;
+
+    private void OpenReadingSessionDialog(int bookId)
+    {
+        readingSessionDialog?.Show(bookId);
     }
 }
