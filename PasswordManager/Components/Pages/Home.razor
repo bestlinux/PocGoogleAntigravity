@@ -1,0 +1,35 @@
+@page "/"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@using Microsoft.EntityFrameworkCore
+@using PasswordManager.Data
+@inject AppDbContext DbContext
+
+<PageTitle>Dashboard - Password Manager</PageTitle>
+
+<div class="glass-card" style="text-align: center; padding: 4rem 2rem;">
+    <h1 style="color: var(--primary-color); font-size: 2.5rem; margin-bottom: 1rem;">Bem-vindo ao seu Cofre</h1>
+    <p style="font-size: 1.125rem; color: #cbd5e1; max-width: 600px; margin: 0 auto 2rem;">
+        Gerencie suas senhas com segurança, rapidez e um visual moderno. Todas as suas credenciais estão criptografadas e protegidas.
+    </p>
+
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <div class="glass-card" style="padding: 1.5rem; min-width: 200px;">
+            <h2 style="font-size: 2.5rem; margin-bottom: 0.5rem;">@TotalPasswords</h2>
+            <p style="color: #94a3b8;">Senhas Salvas</p>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; justify-content: center; gap: 1rem; padding-left: 2rem;">
+            <a href="/add-password" class="btn btn-primary">+ Cadastrar Nova Senha</a>
+            <a href="/passwords" class="btn btn-outline" style="border-color: var(--primary-color); color: var(--primary-color);">Consultar Senhas</a>
+        </div>
+    </div>
+</div>
+
+@code {
+    private int TotalPasswords = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        TotalPasswords = await DbContext.PasswordEntries.CountAsync();
+    }
+}
