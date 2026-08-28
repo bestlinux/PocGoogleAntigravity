@@ -3,6 +3,7 @@ Módulo de Gerenciamento do Banco de Dados SQLite para o Inventário de HQs.
 Inclui suporte a Escritor (Roteirista), Ilustrador (Desenhista), Gênero e Status de Leitura com migração automática.
 """
 
+import os
 import sqlite3
 from typing import List, Dict, Any, Optional
 try:
@@ -10,7 +11,7 @@ try:
 except ImportError:
     pd = None
 
-DB_DEFAULT_PATH = "hqs_inventario.db"
+DB_DEFAULT_PATH = os.getenv("DB_PATH", "hqs_inventario.db")
 
 
 def get_connection(db_path: str = DB_DEFAULT_PATH) -> sqlite3.Connection:
